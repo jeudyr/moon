@@ -124,11 +124,20 @@ body{
 .arrow{ display:none; }
 
 .card{
-  background:var(--card); border:1px solid var(--border);
-  border-radius:14px; padding:16px;
-  display:flex; flex-direction:column; gap:12px;
-  min-height:340px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  padding:12px;
+  width:280px; min-width:280px; /* si estás en carrusel */
+  display:flex; flex-direction:column; gap:10px;
+  transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
 }
+.card:hover{
+  border-color:#dddada;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  transform: translateY(-1px);
+}
+
 .card .img{
   flex:1;
   min-height:180px;
@@ -137,17 +146,21 @@ body{
   border:1px dashed #ddd;
 }
 .card h4{ margin:0; font-size:16px; font-weight:600; color:#333; }
-.price{
-  font-weight:700; display:inline-block; padding:8px 12px; border-radius:999px;
-  background:var(--brand); color:#fff; width:max-content; font-size:15px;
+
+
+.card .price{
+   font-weight:800; color:#111; font-size:16px; margin-top:2px;
 }
-.btn{
-  margin-top:auto; border:0; cursor:pointer;
-  background:var(--brand); color:#fff;
-  padding:12px 14px; border-radius:10px; font-weight:700; font-size:15px;
-  transition: background .15s ease;
+.card .rating{ display:flex; align-items:center; gap:6px; }
+.card .stars{
+  font-size:14px; letter-spacing:1px; line-height:1;
+  /* Truco: texto '★★★★★' con relleno gradiente según porcentaje */
+  background:
+    linear-gradient(90deg,#111 calc(var(--score) / 5 * 100%), #ddd 0);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
 }
-.btn:hover{ background:var(--brand-600); }
 
 /* ========= Footer ========= */
 .footer{
@@ -169,3 +182,90 @@ body{
   .card .img{ min-height:160px; }
 }
 
+/* ======= HERO PROMOS ======= */
+.hero{
+  position:relative;
+  margin:16px 20px;           /* alineado con tu contenido */
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  background:var(--brand-100);
+}
+
+/* Mantener proporción 16:9 y hacer responsive */
+.hero::before{
+  content:"";
+  display:block;
+  aspect-ratio:21/9;   
+  width:100%;       /* altura automática según ancho */
+  max-height: 420px;
+}
+
+.hero-track{
+  position:absolute; inset:0;
+  display:grid;
+}
+.hero-slide{
+  grid-area:1/1;
+  opacity:0; transform:scale(1.01);
+  transition:opacity .35s ease, transform .4s ease;
+}
+.hero-slide.is-active{
+  opacity:1; transform:scale(1);
+}
+.hero-slide img{
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+
+/* Overlay de texto/CTA */
+.hero-overlay{
+  position:absolute; inset:auto 0 0 0;
+  padding:20px 22px;
+  background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,0,0,.55) 70%);
+  color:#fff;
+}
+.hero-overlay h2{
+  margin:0 0 6px; font-size:clamp(22px, 2.4vw, 34px);
+}
+.hero-overlay p{
+  margin:0 0 12px; font-size:clamp(14px, 1.5vw, 18px);
+}
+.hero-cta{
+  display:inline-block;
+  background:var(--brand);
+  color:#fff; text-decoration:none; font-weight:700;
+  padding:10px 14px; border-radius:999px;
+  border:0; box-shadow:0 6px 18px rgba(0,0,0,.15);
+}
+.hero-cta:hover{ background:var(--brand-600); }
+
+/* Flechas */
+.hero-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  border:1px solid var(--border);
+  width:38px; height:38px; border-radius:999px;
+  display:grid; place-items:center;
+  background:#fff; color:var(--ink); font-size:22px;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.12);
+}
+.hero-arrow.left{ left:12px }
+.hero-arrow.right{ right:12px }
+.hero-arrow:hover{ background:var(--brand); color:#fff; border-color:transparent }
+
+/* Dots */
+.hero-dots{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:10px; display:flex; gap:8px;
+}
+.dot{
+  width:10px; height:10px; border-radius:999px; border:0;
+  background:rgba(255,255,255,.6); cursor:pointer;
+}
+.dot.is-active{ background:#fff }
+
+/* Móvil */
+@media (max-width: 640px){
+  .hero{ margin:12px }
+  .hero-overlay{ padding:14px 14px 16px }
+}

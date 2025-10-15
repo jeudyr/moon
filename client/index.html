@@ -3,36 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Moon Store</title>
+  <title>Moon </title>
   <link rel="stylesheet" href="src/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 </head>
 <body>
   <!-- Top bar -->
   <header class="topbar">
     <div class="brand">
       <img src="img/logo.png" alt="Moon Store" class="logo">
-      <span class="brand-name">MOON <b>STORE</b></span>
+      <span class="brand-name">MOON <b></b></span>
     </div>
 
     <form class="search">
       <input type="search" placeholder="Buscar producto" aria-label="Buscar producto">
-      <button type="submit" aria-label="Buscar">🔍</button>
-    </form>
+<button type="submit" aria-label="Buscar">
+  <i class="bi bi-search"></i>
+</button>    </form>
 
     <nav class="actions">
-      <a href="#" class="icon-link" aria-label="Carrito">🛒</a>
-      <a href="#" class="login">Iniciar sesión</a>
-    </nav>
+  <a href="#" class="icon-link" aria-label="Carrito">
+    <i class="bi bi-cart3"></i>
+  </a>
+  <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión
+  </a>
+</nav>
+
   </header>
 
   <!-- Breadcrumb / secciones -->
   <div class="crumbbar">
     <a href="#">Inicio</a>
-    <span>›</span>
+    <span></span>
     <span class="current">Catálogo</span>
   </div>
+  
+
+
 
   <main class="layout">
     <!-- Sidebar categorías -->
@@ -49,112 +59,136 @@
       </ul>
     </aside>
 
-    <!-- Contenido -->
-    <section class="content">
-      <!-- Bloque: Alfombras -->
-      <section class="block">
-        <header class="block-head">
-          <h2>Alfombras</h2>
-          <a class="see-more" href="#" aria-label="Ver más">›</a>
-        </header>
+<section class="maincol">
+      <!-- HERO PROMOS -->
+      <section class="hero" aria-label="Promociones destacadas">
+        <button class="hero-arrow left" aria-label="Anterior" data-hero-left>‹</button>
 
-        <div class="scroll-row">
-          <button class="arrow left" aria-label="Anterior">‹</button>
-
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra negra</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
+        <div class="hero-track" data-hero-track>
+          <!-- Slide 1 -->
+          <article class="hero-slide is-active">
+            <img src="img/promos/promo1.jpg" alt="Estrena kit de luces con 20% de descuento" loading="lazy">
+            <div class="hero-overlay">
+              <h2>Ilumina tu camino</h2>
+              <p>Kit LED H4 con <strong>20% OFF</strong> por tiempo limitado.</p>
+              <a href="#" class="hero-cta">Ver oferta</a>
+            </div>
           </article>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra blanca</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+          </div>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra azul</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+        <button class="hero-arrow right" aria-label="Siguiente" data-hero-right>›</button>
 
-          <button class="arrow right" aria-label="Siguiente">›</button>
+        <div class="hero-dots" role="tablist" aria-label="Ir a promoción">
+          <button class="dot is-active" aria-label="Promo 1" data-hero-dot="0"></button>
+          <button class="dot" aria-label="Promo 2" data-hero-dot="1"></button>
+          <button class="dot" aria-label="Promo 3" data-hero-dot="2"></button>
         </div>
       </section>
 
-      <!-- Bloque: Carrocería -->
-      <section class="block">
-        <header class="block-head">
-          <h2>Carrocería</h2>
-          <a class="see-more" href="#" aria-label="Ver más">›</a>
-        </header>
+          <!-- Contenido -->
+          <section class="content">
+            <!-- Bloque: Alfombras -->
+            <section class="block">
+              <header class="block-head">
+                <h2>Alfombras</h2>
+                <a class="see-more" href="#" aria-label="Ver más">›</a>
+              </header>
 
-        <div class="scroll-row">
-          <button class="arrow left" aria-label="Anterior">‹</button>
+              <div class="scroll-row">
+                <button class="arrow left" aria-label="Anterior">‹</button>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra negra</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra negra</h4>
+                  <div class="price">₡13500</div>
+                   <span class="stars" aria-hidden="true">★★★★★</span>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra blanca</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+                </article>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra azul</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra blanca</h4>
+                  <div class="price">₡13500</div>
+             <span class="stars" aria-hidden="true">★★★★★</span>
 
-          <button class="arrow right" aria-label="Siguiente">›</button>
-        </div>
-      </section>
+                </article>
 
-      <!-- Bloque: Luces -->
-      <section class="block">
-        <header class="block-head">
-          <h2>Luces</h2>
-          <a class="see-more" href="#" aria-label="Ver más">›</a>
-        </header>
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra azul</h4>
+                  <div class="price">₡13500</div>
+                  <span class="stars" aria-hidden="true">★★★★★</span>
+                </article>
 
-        <div class="scroll-row">
-          <button class="arrow left" aria-label="Anterior">‹</button>
+                <button class="arrow right" aria-label="Siguiente">›</button>
+              </div>
+            </section>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra negra</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+            <!-- Bloque: Carrocería -->
+            <section class="block">
+              <header class="block-head">
+                <h2>Carrocería</h2>
+                <a class="see-more" href="#" aria-label="Ver más">›</a>
+              </header>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra blanca</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+              <div class="scroll-row">
+                <button class="arrow left" aria-label="Anterior">‹</button>
 
-          <article class="card">
-            <div class="img"></div>
-            <h4>Alfombra azul</h4>
-            <div class="price">₡13500</div>
-            <button class="btn">Añadir al carrito</button>
-          </article>
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra negra</h4>
+                  <div class="price">₡13500</div>
+                </article>
 
-          <button class="arrow right" aria-label="Siguiente">›</button>
-        </div>
-      </section>
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra blanca</h4>
+                  <div class="price">₡13500</div>
+                </article>
+
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra azul</h4>
+                  <div class="price">₡13500</div>
+                </article>
+
+                <button class="arrow right" aria-label="Siguiente">›</button>
+              </div>
+            </section>
+
+            <!-- Bloque: Luces -->
+            <section class="block">
+              <header class="block-head">
+                <h2>Luces</h2>
+                <a class="see-more" href="#" aria-label="Ver más">›</a>
+              </header>
+
+              <div class="scroll-row">
+                <button class="arrow left" aria-label="Anterior">‹</button>
+
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra negra</h4>
+                  <div class="price">₡13500</div>
+                </article>
+
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra blanca</h4>
+                  <div class="price">₡13500</div>
+                </article>
+
+                <article class="card">
+                  <div class="img"></div>
+                  <h4>Alfombra azul</h4>
+                  <div class="price">₡13500</div>
+                </article>
+
+                <button class="arrow right" aria-label="Siguiente">›</button>
+              </div>
+            </section>
+          
     </section>
   </main>
 
