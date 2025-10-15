@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Moon </title>
+  <title>Moon</title>
   <link rel="stylesheet" href="src/styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
 </head>
 <body>
   <!-- Top bar -->
@@ -20,52 +19,34 @@
 
     <form class="search">
       <input type="search" placeholder="Buscar producto" aria-label="Buscar producto">
-<button type="submit" aria-label="Buscar">
-  <i class="bi bi-search"></i>
-</button>    </form>
+      <button type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button>
+    </form>
 
     <nav class="actions">
-  <a href="#" class="icon-link" aria-label="Carrito">
-    <i class="bi bi-cart3"></i>
-  </a>
-  <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión
-  </a>
-</nav>
-
+      <a href="#" class="icon-link" aria-label="Carrito"><i class="bi bi-cart3"></i></a>
+      <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión</a>
+    </nav>
   </header>
 
-  <!-- Breadcrumb / secciones -->
+  <!-- Breadcrumb -->
   <div class="crumbbar">
     <a href="#">Inicio</a>
     <span></span>
     <span class="current">Catálogo</span>
   </div>
-  
-
-
 
   <main class="layout">
     <!-- Sidebar categorías -->
     <aside class="sidebar">
       <h3>Categorías</h3>
-      <ul class="cats">
-        <li><a href="#">Accesorios</a></li>
-        <li><a href="#">Audio y video</a></li>
-        <li><a href="#">Herramientas</a></li>
-        <li><a href="#">Llantas y baterías</a></li>
-        <li><a href="#">Mantenimiento automotriz</a></li>
-        <li><a href="#">Luces</a></li>
-        <li><a href="#">Carrocería</a></li>
-      </ul>
+      <ul class="cats"><!-- se llena por JS --></ul>
     </aside>
 
-<section class="maincol">
-      <!-- HERO PROMOS -->
+    <section class="maincol">
+      <!-- HERO (igual que lo tenías) -->
       <section class="hero" aria-label="Promociones destacadas">
         <button class="hero-arrow left" aria-label="Anterior" data-hero-left>‹</button>
-
         <div class="hero-track" data-hero-track>
-          <!-- Slide 1 -->
           <article class="hero-slide is-active">
             <img src="img/promos/promo1.jpg" alt="Estrena kit de luces con 20% de descuento" loading="lazy">
             <div class="hero-overlay">
@@ -74,11 +55,8 @@
               <a href="#" class="hero-cta">Ver oferta</a>
             </div>
           </article>
-
-          </div>
-
+        </div>
         <button class="hero-arrow right" aria-label="Siguiente" data-hero-right>›</button>
-
         <div class="hero-dots" role="tablist" aria-label="Ir a promoción">
           <button class="dot is-active" aria-label="Promo 1" data-hero-dot="0"></button>
           <button class="dot" aria-label="Promo 2" data-hero-dot="1"></button>
@@ -86,112 +64,122 @@
         </div>
       </section>
 
-          <!-- Contenido -->
-          <section class="content">
-            <!-- Bloque: Alfombras -->
-            <section class="block">
-              <header class="block-head">
-                <h2>Alfombras</h2>
-                <a class="see-more" href="#" aria-label="Ver más">›</a>
-              </header>
-
-              <div class="scroll-row">
-                <button class="arrow left" aria-label="Anterior">‹</button>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra negra</h4>
-                  <div class="price">₡1350</div>
-                   <span class="stars" aria-hidden="true">★★★★★</span>
-
-                </article>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra blanca</h4>
-                  <div class="price">₡13500</div>
-             <span class="stars" aria-hidden="true">★★★★★</span>
-
-                </article>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra azul</h4>
-                  <div class="price">₡13500</div>
-                  <span class="stars" aria-hidden="true">★★★★★</span>
-                </article>
-
-                <button class="arrow right" aria-label="Siguiente">›</button>
-              </div>
-            </section>
-
-            <!-- Bloque: Carrocería -->
-            <section class="block">
-              <header class="block-head">
-                <h2>Carrocería</h2>
-                <a class="see-more" href="#" aria-label="Ver más">›</a>
-              </header>
-
-              <div class="scroll-row">
-                <button class="arrow left" aria-label="Anterior">‹</button>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra negra</h4>
-                  <div class="price">₡13500</div>
-                </article>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra blanca</h4>
-                  <div class="price">₡13500</div>
-                </article>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra azul</h4>
-                  <div class="price">₡13500</div>
-                </article>
-
-                <button class="arrow right" aria-label="Siguiente">›</button>
-              </div>
-            </section>
-
-            <!-- Bloque: Luces -->
-            <section class="block">
-              <header class="block-head">
-                <h2>Luces</h2>
-                <a class="see-more" href="#" aria-label="Ver más">›</a>
-              </header>
-
-              <div class="scroll-row">
-                <button class="arrow left" aria-label="Anterior">‹</button>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra negra</h4>
-                  <div class="price">₡13500</div>
-                </article>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra blanca</h4>
-                  <div class="price">₡13500</div>
-                </article>
-
-                <article class="card">
-                  <div class="img"></div>
-                  <h4>Alfombra azul</h4>
-                  <div class="price">₡13500</div>
-                </article>
-
-                <button class="arrow right" aria-label="Siguiente">›</button>
-              </div>
-            </section>
-          
+      <!-- Contenido dinámico por JS -->
+      <section class="content"></section>
     </section>
   </main>
 
   <footer class="footer">© 2025 Moon Store</footer>
+
+  <script>
+const API = 'http://localhost:5000/api'; // ajusta si despliegas
+
+async function fetchJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+function setActive(linkEl) {
+  document.querySelectorAll('.cats a').forEach(a => a.classList.remove('active'));
+  linkEl.classList.add('active');
+}
+
+async function loadCategorias() {
+  try {
+    const cats = await fetchJSON(`${API}/categorias`);
+    const ul = document.querySelector('.sidebar .cats');
+    ul.innerHTML = '';
+
+    cats.forEach((c, i) => {
+      const li = document.createElement('li');
+      li.className = 'cat-item';
+
+      // enlace de categoría (click = ver todo)
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = c.nombre;
+      a.onclick = (e) => {
+        e.preventDefault();
+        setActive(a);
+        loadProductosCategoria(c.id, c.nombre);
+      };
+
+      // contenedor submenú (se llena on-hover)
+      const subUl = document.createElement('ul');
+      subUl.className = 'subcats'; // oculto por CSS
+      subUl.dataset.loaded = '0';
+
+      // fetch on-hover (solo 1 vez)
+      let hoverTimer;
+      li.addEventListener('mouseenter', async () => {
+        hoverTimer = setTimeout(async () => {
+          if (subUl.dataset.loaded === '1') return;
+          const subs = await fetchJSON(`${API}/categorias/${c.id}/subcategorias`);
+          subUl.innerHTML = subs.map(s => `
+            <li><a href="#" data-id="${s.id}">${s.nombre}</a></li>
+          `).join('') || '<li class="empty">Sin subcategorías</li>';
+          subUl.dataset.loaded = '1';
+
+          // click en subcategoría
+          subUl.querySelectorAll('a[data-id]').forEach(el => {
+            el.addEventListener('click', (ev) => {
+              ev.preventDefault();
+              const subId = el.dataset.id;
+              setActive(el); // marca la que toques
+              loadProductosSubcategoria(subId, `${c.nombre} › ${el.textContent}`);
+            });
+          });
+        }, 150); // pequeño delay para evitar parpadeo
+      });
+      li.addEventListener('mouseleave', () => clearTimeout(hoverTimer));
+
+      li.appendChild(a);
+      li.appendChild(subUl);
+      ul.appendChild(li);
+
+      if (i === 0) a.click(); // carga la primera categoría al iniciar
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.querySelector('.sidebar .cats').innerHTML = '<li>Error cargando categorías</li>';
+  }
+}
+
+// productos por CATEGORÍA (toda la categoría)
+async function loadProductosCategoria(categoriaId, nombreCategoria) {
+  const items = await fetchJSON(`${API}/categorias/${categoriaId}/productos`);
+  renderProductos(nombreCategoria, items);
+}
+
+// productos por SUBCATEGORÍA (cuando haces hover y clic)
+async function loadProductosSubcategoria(subId, titulo) {
+  const items = await fetchJSON(`${API}/subcategorias/${subId}/productos`);
+  renderProductos(titulo, items);
+}
+
+// pinta el bloque de productos (sin contador)
+function renderProductos(titulo, items) {
+  const cont = document.querySelector('.maincol .content');
+  cont.innerHTML = `
+    <section class="block">
+      <header class="block-head"><h2>${titulo}</h2></header>
+      <div class="scroll-row">
+        ${items.map(p => `
+          <article class="card">
+            <div class="img" style="background-image:url('${p.url || 'img/placeholder.jpg'}'); background-size:cover; background-position:center;"></div>
+            <h4>${p.marca ?? ''}</h4>
+            <p class="product-name">${p.nombre ?? ''}</p>
+            <div class="price">₡${Number(p.precio ?? 0).toLocaleString('es-CR')}</div>
+          </article>
+        `).join('')}
+      </div>
+    </section>`;
+}
+
+document.addEventListener('DOMContentLoaded', loadCategorias);
+</script>
+
 </body>
 </html>

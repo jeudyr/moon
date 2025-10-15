@@ -1,42 +1,34 @@
-'use strict';
+const { Sequelize, DataTypes } = require('sequelize');
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require('../config/config')[env];
+const sequelize = new Sequelize(process.env.PG_URI, { dialect: 'postgres', logging: false });
 
-const db = {};
+const Categoria    = require('./Categoria')(sequelize, DataTypes);
+const Subcategoria = require('./Subcategoria')(sequelize, DataTypes);
+const Producto     = require('./Producto')(sequelize, DataTypes);
 
-let sequelize;
-if (config.url) {
-  sequelize = new Sequelize(config.url, config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
-
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      (file.slice(-3) === '.js')
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+// Categoria (id_categoria) 1—N Subcategoria (fk_categoria)
+Categoria.hasMany(Subcategoria, {
+  as: 'subcategorias',
+  foreignKey: 'fk_categoria',
+  sourceKey:  'id_categoria'
+});
+Subcategoria.belongsTo(Categoria, {
+  as: 'categoria',
+  foreignKey: 'fk_categoria',
+  targetKey:  'id_categoria'
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+// Subcategoria (id_subcategoria) 1—N Producto (fk_subcategoria)
+Subcategoria.hasMany(Producto, {
+  as: 'productos',
+  foreignKey: 'fk_subcategoria',
+  sourceKey:  'id_subcategoria'
+});
+Producto.belongsTo(Subcategoria, {
+  as: 'subcategoria',
+  foreignKey: 'fk_subcategoria',
+  targetKey:  'id_subcategoria'
+});
 
-module.exports = db;
+module.exports = { sequelize, Categoria, Subcategoria, Producto };
+
