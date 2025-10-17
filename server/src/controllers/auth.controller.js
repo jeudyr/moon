@@ -1,4 +1,5 @@
-const { User } = require('../models');
+const db = require('../models');
+const { User } = db;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -10,18 +11,17 @@ function sign(user) {
   );
 }
 
-// Registro
+// Registro (normaliza correo)
 exports.register = async (req, res) => {
   try {
-    const { nombre, apellidos, correo, telefono, contrasena } = req.body;
+    let { nombre, apellidos, correo, telefono, contrasena } = req.body;
+    correo = (correo || '').trim().toLowerCase();
 
     const existe = await User.findOne({ where: { correo } });
     if (existe) return res.status(409).json({ message: 'El correo ya existe.' });
 
     const hash = await bcrypt.hash(contrasena, 10);
-    const nuevo = await User.create({
-      nombre, apellidos, correo, telefono, contrasena: hash
-    });
+    const nuevo = await User.create({ nombre, apellidos, correo, telefono, contrasena: hash });
 
     const token = sign(nuevo);
     res.json({
@@ -35,18 +35,19 @@ exports.register = async (req, res) => {
       }
     });
   } catch (e) {
-    console.error(e);
+    console.error('[REGISTER ERROR]', e);
     res.status(500).json({ message: 'Error al registrar.' });
   }
 };
 
-// Login
+// Login (normaliza correo)
 exports.login = async (req, res) => {
   try {
-    const { correo, contrasena } = req.body;
+    let { correo, contrasena } = req.body;
+    correo = (correo || '').trim().toLowerCase();
 
     const user = await User.findOne({ where: { correo } });
-    if (!user) return res.status(401).json({ message: 'Credenciales inválidas' });
+    if (!user || !user.contrasena) return res.status(401).json({ message: 'Credenciales inválidas' });
 
     const ok = await bcrypt.compare(contrasena, user.contrasena);
     if (!ok) return res.status(401).json({ message: 'Credenciales inválidas' });
@@ -63,7 +64,7 @@ exports.login = async (req, res) => {
       }
     });
   } catch (e) {
-    console.error(e);
+    console.error('[LOGIN ERROR]', e);
     res.status(500).json({ message: 'Error al iniciar sesión.' });
   }
 };
