@@ -10,6 +10,10 @@ const Subcategoria   = require('./Subcategoria')(sequelize, DataTypes);
 const Producto       = require('./Producto')(sequelize, DataTypes);
 const Carrito        = require('./Carrito')(sequelize, DataTypes);
 const DetalleCarrito = require('./DetalleCarrito')(sequelize, DataTypes);
+const Categoria    = require('./Categoria')(sequelize, DataTypes);
+const Subcategoria = require('./Subcategoria')(sequelize, DataTypes);
+const Producto     = require('./Producto')(sequelize, DataTypes);
+const User         = require('./User')(sequelize, DataTypes);   // 👈 Cargar User
 
 // ===== Asociaciones de catálogo =====
 Subcategoria.belongsTo(Categoria, { as: 'categoria', foreignKey: 'fk_categoria' });
@@ -21,6 +25,7 @@ Producto.belongsTo(Subcategoria,  { as: 'subcategoria', foreignKey: 'fk_subcateg
 // ===== Asociaciones de carrito =====
 Carrito.hasMany(DetalleCarrito,   { as: 'items',    foreignKey: 'fk_carrito', sourceKey: 'id_carrito' });
 DetalleCarrito.belongsTo(Carrito, { as: 'carrito',  foreignKey: 'fk_carrito', targetKey: 'id_carrito' });
+module.exports = { sequelize, Categoria, Subcategoria, Producto, User }; // 👈 Exportar User
 
 DetalleCarrito.belongsTo(Producto,{ as: 'producto', foreignKey: 'fk_producto', targetKey: 'id_producto' });
 Producto.hasMany(DetalleCarrito,  { as: 'detalles', foreignKey: 'fk_producto', sourceKey: 'id_producto' });
