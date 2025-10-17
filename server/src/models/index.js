@@ -5,6 +5,7 @@ const sequelize = new Sequelize(process.env.PG_URI, { dialect: 'postgres', loggi
 const Categoria    = require('./Categoria')(sequelize, DataTypes);
 const Subcategoria = require('./Subcategoria')(sequelize, DataTypes);
 const Producto     = require('./Producto')(sequelize, DataTypes);
+const User         = require('./User')(sequelize, DataTypes);   // 👈 Cargar User
 
 // Categoria (id_categoria) 1—N Subcategoria (fk_categoria)
 Categoria.hasMany(Subcategoria, {
@@ -30,5 +31,5 @@ Producto.belongsTo(Subcategoria, {
   targetKey:  'id_subcategoria'
 });
 
-module.exports = { sequelize, Categoria, Subcategoria, Producto };
+module.exports = { sequelize, Categoria, Subcategoria, Producto, User }; // 👈 Exportar User
 

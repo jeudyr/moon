@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moon | Iniciar sesión</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+ 
+</head>
+<body class="auth-page">
+   <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="img/logo.png" alt="Moon Store" class="logo">
+      <span class="brand-name">MOON <b></b></span>
+    </div>
+
+ 
+
+   
+  </header>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h1><i class="bi bi-person-circle"></i> Iniciar sesión</h1>
+        <p class="muted">Accede para comprar más rápido y ver tu historial.</p>
+      </div>
+
+      <div class="auth-body">
+        <div id="err" class="error"></div>
+        <div id="ok" class="success"></div>
+
+        <form id="loginForm">
+          <label for="email" class="auth-label">Correo electrónico</label>
+          <input id="email" name="email" type="email" class="auth-input" placeholder="tucorreo@ejemplo.com" autofocus required>
+
+          <div class="auth-field">
+            <label for="password" class="auth-label">Contraseña</label>
+            <div class="pwd-wrap">
+              <input id="password" name="password" type="password" class="auth-input" placeholder="••••••••" required minlength="6">
+              <i class="bi bi-eye-slash eye" id="togglePwd" title="Mostrar/ocultar"></i>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="muted" style="display:flex;align-items:center;gap:.5rem;">
+              <input type="checkbox" id="remember" checked> Mantener sesión
+            </label>
+            <a href="#" class="muted">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-box-arrow-in-right"></i> Entrar
+          </button>
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        <span class="muted">¿No tienes cuenta?</span>
+        <a href="register.html" class="btn btn-ghost">Crear cuenta</a>
+      </div>
+    </div>
+  </div>
+<footer class="footer">
+  <div class="footer-container">
+    
+    <!-- Sección Jeudy -->
+    <div class="footer-section">
+      <h4>Jeudy Rodríguez</h4>
+      <ul>
+        <li><a href="https://cvjehudy.duckdns.org/" target="_blank">Currículum </a></li>
+        <li><a href="https://github.com/jeudyr" target="_blank">GitHub</a></li>
+        <li><a href="https://facturafast.onrender.com/" target="_blank">FacturaFast</a></li>
+        <li><a href="https://www.linkedin.com/in/jehudy-rodr%C3%ADguez-jim%C3%A9nez-21b851237/" target="_blank">LinkedIn</a></li>
+      </ul>
+    </div>
+
+    <!-- Sección Valeria -->
+    <div class="footer-section">
+      <h4>Valeria</h4>
+      <ul>
+        <li><a href="#" target="_blank">Currículum</a></li> <!-- lo dejas pendiente -->
+        <li><a href="https://github.com/Vals0504" target="_blank">GitHub</a></li>
+        <li><a href="https://remodelacionesmarin.azurewebsites.net/" target="_blank">Remodelaciones Marín</a></li>
+        <li><a href="https://www.linkedin.com/feed/?trk=guest_homepage-basic_nav-header-signin" target="_blank">LinkedIn</a></li>
+      </ul>
+    </div>
+
+    <!-- Proyectos en conjunto -->
+    <div class="footer-section">
+      <h4>Proyectos en conjunto</h4>
+      <ul>
+        <li><a href="https://moonstore.com" target="_blank">Moon Store</a></li>
+      </ul>
+    </div>
+
+    <!-- Derechos -->
+    <div class="footer-section">
+      <h4>Moon Store</h4>
+      <p>© 2025 Moon Store <br> Todos los derechos reservados</p>
+    </div>
+  </div>
+</footer>
+<script>
+  // === Config ===
+  const API = 'http://localhost:5000/api'; // cambia en producción
+
+  // === Helpers UI ===
+  const $ = s => document.querySelector(s);
+  const show = (el, msg) => { el.textContent = msg; el.style.display = 'block'; }
+  const hide = el => el.style.display = 'none';
+
+  // Mostrar/ocultar contraseña
+  $('#togglePwd').addEventListener('click', () => {
+    const inp = $('#password');
+    const isPwd = inp.type === 'password';
+    inp.type = isPwd ? 'text' : 'password';
+    $('#togglePwd').className = 'bi ' + (isPwd ? 'bi-eye' : 'bi-eye-slash') + ' eye';
+  });
+
+ // === Login ===
+// util: timeout para fetch
+function fetchWithTimeout(resource, options = {}) {
+  const { timeout = 10000 } = options; // 10s
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  return fetch(resource, { ...options, signal: controller.signal })
+    .finally(() => clearTimeout(id));
+}
+
+// === Login ===
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hide($('#err')); hide($('#ok'));
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true;
+
+  const correo = $('#email').value.trim();
+  const contrasena = $('#password').value;
+  const remember = $('#remember').checked;
+
+  try {
+    const r = await fetchWithTimeout(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo, contrasena }),
+      timeout: 12000
+    });
+
+    let data = null;
+    try { data = await r.json(); } catch {}
+
+    if (!r.ok) {
+      // Mensajes amables según status
+      let msg = 'Error al iniciar sesión.';
+      if (r.status === 400) msg = (data && data.message) || 'Faltan credenciales.';
+      if (r.status === 401) msg = (data && data.message) || 'Correo o contraseña incorrectos.';
+      if (r.status === 404) msg = 'Ruta no encontrada. Revisa la URL del API.';
+      if (r.status >= 500) msg = 'Servidor ocupado. Intenta de nuevo.';
+      throw new Error(msg);
+    }
+
+    // { token, user }
+    const store = remember ? window.localStorage : window.sessionStorage;
+    store.setItem('moon_token', data.token);
+    store.setItem('moon_user', JSON.stringify(data.user || {}));
+    localStorage.setItem('moon_storage', remember ? 'local' : 'session');
+
+    show($('#ok'), '¡Bienvenido!');
+    const params = new URLSearchParams(location.search);
+    const returnUrl = params.get('returnUrl') || 'index.html';
+    setTimeout(() => location.href = returnUrl, 400);
+
+  } catch (err) {
+    // AbortError = timeout
+    const msg = err.name === 'AbortError'
+      ? 'Tiempo de espera agotado. Verifica tu conexión o el servidor.'
+      : (err.message || 'No se pudo iniciar sesión.');
+    show($('#err'), msg);
+    console.error('[LOGIN ERROR]', err);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+
+</script>
+</body>
+</html>
