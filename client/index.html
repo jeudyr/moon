@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <style>
-    /* para que los <a class="card"> se vean igual que las cards */
     .card { text-decoration: none; color: inherit; display:flex; flex-direction:column; }
     .card:hover { text-decoration: none; }
   </style>
@@ -28,7 +27,7 @@
     </form>
 
     <nav class="actions">
-      <a href="#" class="icon-link" aria-label="Carrito"><i class="bi bi-cart3"></i></a>
+      <a href="carrito.html" class="icon-link" aria-label="Carrito"><i class="bi bi-cart3"></i></a>
       <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión</a>
     </nav>
   </header>
@@ -77,11 +76,14 @@
   <footer class="footer">© 2025 Moon Store</footer>
 
   <script>
-const API = 'http://localhost:5000/api'; // cambia a tu host en prod
+const API = 'http://localhost:5000/api';
 
 async function fetchJSON(url) {
   const r = await fetch(url);
-  if (!r.ok) throw new Error('HTTP ' + r.status);
+  if (!r.ok) {
+    const msg = await r.text().catch(()=> '');
+    throw new Error(`HTTP ${r.status}: ${msg || r.statusText}`);
+  }
   return r.json();
 }
 
@@ -100,41 +102,44 @@ async function loadCategorias() {
       const li = document.createElement('li');
       li.className = 'cat-item';
 
-      // enlace de categoría (click = ver todo)
+      // enlace de categoría (click = ver todos los productos de esa categoría)
       const a = document.createElement('a');
       a.href = '#';
       a.textContent = c.nombre;
-      a.onclick = (e) => {
+      a.onclick = async (e) => {
         e.preventDefault();
         setActive(a);
-        loadProductosCategoria(c.id, c.nombre);
+        await loadProductosCategoria(c.id_categoria, c.nombre);
       };
 
-      // contenedor submenú (se llena on-hover)
+      // submenú: se carga on-hover (una sola vez)
       const subUl = document.createElement('ul');
       subUl.className = 'subcats';
       subUl.dataset.loaded = '0';
 
-      // fetch on-hover (solo 1 vez)
       let hoverTimer;
       li.addEventListener('mouseenter', async () => {
         hoverTimer = setTimeout(async () => {
           if (subUl.dataset.loaded === '1') return;
-          const subs = await fetchJSON(`${API}/categorias/${c.id}/subcategorias`);
-          subUl.innerHTML = subs.map(s => `
-            <li><a href="#" data-id="${s.id}">${s.nombre}</a></li>
-          `).join('') || '<li class="empty">Sin subcategorías</li>';
-          subUl.dataset.loaded = '1';
+          try {
+            const subs = await fetchJSON(`${API}/categorias/${c.id_categoria}/subcategorias`);
+            subUl.innerHTML = (subs.length
+              ? subs.map(s => `<li><a href="#" data-id="${s.id_subcategoria}">${s.nombre}</a></li>`).join('')
+              : '<li class="empty">Sin subcategorías</li>');
+            subUl.dataset.loaded = '1';
 
-          // click en subcategoría
-          subUl.querySelectorAll('a[data-id]').forEach(el => {
-            el.addEventListener('click', (ev) => {
-              ev.preventDefault();
-              const subId = el.dataset.id;
-              setActive(el);
-              loadProductosSubcategoria(subId, `${c.nombre} › ${el.textContent}`);
+            subUl.querySelectorAll('a[data-id]').forEach(el => {
+              el.addEventListener('click', async (ev) => {
+                ev.preventDefault();
+                const subId = Number(el.dataset.id);
+                setActive(el);
+                await loadProductosSubcategoria(subId, `${c.nombre} › ${el.textContent}`);
+              });
             });
-          });
+          } catch (err) {
+            subUl.innerHTML = '<li class="empty">Error cargando</li>';
+            console.error('subcats error:', err);
+          }
         }, 150);
       });
       li.addEventListener('mouseleave', () => clearTimeout(hoverTimer));
@@ -164,7 +169,6 @@ async function loadProductosSubcategoria(subId, titulo) {
   renderProductos(titulo, items);
 }
 
-// pinta el bloque de productos
 function renderProductos(titulo, items) {
   const cont = document.querySelector('.maincol .content');
   cont.innerHTML = `
@@ -173,11 +177,11 @@ function renderProductos(titulo, items) {
       <div class="scroll-row">
         ${items.map(p => `
           <a class="card" href="product.html?id=${p.id_producto}">
-            <div class="img" style="background-image:url('${p.url || 'img/placeholder.jpg'}'); background-size:cover; background-position:center;"></div>
-            <h4><strong>${p.marca ?? ''}</strong></h4>
+            <div class="img" style="background-image:url('${(p.url && p.url.trim()!=='') ? p.url : 'img/placeholder.jpg'}'); background-size:cover; background-position:center;"></div>
+            ${p.marca ? `<h4><strong>${p.marca}</strong></h4>` : ''}
             <p class="product-name">${p.nombre ?? ''}</p>
             <div class="price">₡${Number(p.precio ?? 0).toLocaleString('es-CR')}</div>
-            <span class="stars" aria-hidden="true">★★★★★</span>
+            
           </a>
         `).join('')}
       </div>
@@ -188,4 +192,3 @@ document.addEventListener('DOMContentLoaded', loadCategorias);
   </script>
 </body>
 </html>
-

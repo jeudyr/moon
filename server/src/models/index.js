@@ -1,34 +1,35 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
-const sequelize = new Sequelize(process.env.PG_URI, { dialect: 'postgres', logging: false });
+// Asegúrate de tener PG_URI en server/.env
+// Ej: PG_URI=postgres://postgres:password@localhost:5432/moon
+const sequelize = new Sequelize(process.env.PG_URI, { logging: false });
 
-const Categoria    = require('./Categoria')(sequelize, DataTypes);
-const Subcategoria = require('./Subcategoria')(sequelize, DataTypes);
-const Producto     = require('./Producto')(sequelize, DataTypes);
+// Importa modelos
+const Categoria      = require('./Categoria')(sequelize, DataTypes);
+const Subcategoria   = require('./Subcategoria')(sequelize, DataTypes);
+const Producto       = require('./Producto')(sequelize, DataTypes);
+const Carrito        = require('./Carrito')(sequelize, DataTypes);
+const DetalleCarrito = require('./DetalleCarrito')(sequelize, DataTypes);
 
-// Categoria (id_categoria) 1—N Subcategoria (fk_categoria)
-Categoria.hasMany(Subcategoria, {
-  as: 'subcategorias',
-  foreignKey: 'fk_categoria',
-  sourceKey:  'id_categoria'
-});
-Subcategoria.belongsTo(Categoria, {
-  as: 'categoria',
-  foreignKey: 'fk_categoria',
-  targetKey:  'id_categoria'
-});
+// ===== Asociaciones de catálogo =====
+Subcategoria.belongsTo(Categoria, { as: 'categoria', foreignKey: 'fk_categoria' });
 
-// Subcategoria (id_subcategoria) 1—N Producto (fk_subcategoria)
-Subcategoria.hasMany(Producto, {
-  as: 'productos',
-  foreignKey: 'fk_subcategoria',
-  sourceKey:  'id_subcategoria'
-});
-Producto.belongsTo(Subcategoria, {
-  as: 'subcategoria',
-  foreignKey: 'fk_subcategoria',
-  targetKey:  'id_subcategoria'
-});
+Producto.belongsTo(Subcategoria,  { as: 'subcategoria', foreignKey: 'fk_subcategoria' });
+// (opcional) si quieres navegar inverso:
+// Subcategoria.hasMany(Producto,    { as: 'productos',  foreignKey: 'fk_subcategoria' });
 
-module.exports = { sequelize, Categoria, Subcategoria, Producto };
+// ===== Asociaciones de carrito =====
+Carrito.hasMany(DetalleCarrito,   { as: 'items',    foreignKey: 'fk_carrito', sourceKey: 'id_carrito' });
+DetalleCarrito.belongsTo(Carrito, { as: 'carrito',  foreignKey: 'fk_carrito', targetKey: 'id_carrito' });
 
+DetalleCarrito.belongsTo(Producto,{ as: 'producto', foreignKey: 'fk_producto', targetKey: 'id_producto' });
+Producto.hasMany(DetalleCarrito,  { as: 'detalles', foreignKey: 'fk_producto', sourceKey: 'id_producto' });
+
+module.exports = {
+  sequelize,
+  Categoria,
+  Subcategoria,
+  Producto,
+  Carrito,
+  DetalleCarrito,
+};

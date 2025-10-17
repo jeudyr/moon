@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Moon | Carrito</title>
+
+  <!-- Tu CSS global -->
+  <link rel="stylesheet" href="src/styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body>
+  <!-- Topbar igual a tus páginas -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit">
+        <img src="img/logo.png" alt="Moon" class="logo">
+        <span class="brand-name">MOON</span>
+      </a>
+    </div>
+    <form class="search" onsubmit="event.preventDefault();">
+      <input type="search" placeholder="Buscar producto" aria-label="Buscar producto">
+      <button type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button>
+    </form>
+    <nav class="actions">
+      <a href="carrito.html" class="icon-link" aria-label="Carrito"><i class="bi bi-cart3"></i></a>
+      <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión</a>
+    </nav>
+  </header>
+
+  <div class="crumbbar">
+    <a href="index.html">Inicio</a>
+    <span></span>
+    <span class="current">Carrito</span>
+  </div>
+
+  <main class="cart-wrap">
+    <div class="cart-grid">
+      <section class="cart-card">
+        <h2>Tu carrito</h2>
+        <div class="cart-body" id="cart-list"></div>
+      </section>
+
+      <aside class="cart-card cart-sum">
+        <h2>Resumen</h2>
+        <div class="cart-body">
+          <div class="line"><span>Subtotal</span> <span id="sum-sub">₡0</span></div>
+          <div class="line total"><span>Total</span> <span id="sum-total">₡0</span></div>
+          <div class="mt">
+            <button class="btn btn-primary"><i class="bi bi-credit-card"></i> Proceder al pago</button>
+          </div>
+          <div class="mt center">
+            <button class="btn-link" id="btn-empty"><i class="bi bi-trash"></i> Vaciar carrito</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Moon Store</footer>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    const USER_ID = 1; // TODO: reemplazar por el usuario real de sesión
+
+    const $ = s => document.querySelector(s);
+    const money = n => '₡' + Number(n||0).toLocaleString('es-CR');
+
+    async function getCart(){
+      const r = await fetch(`${API}/carrito?usuario=${USER_ID}`);
+      if(!r.ok) throw new Error('No se pudo cargar el carrito');
+      return r.json();
+    }
+    async function updItem(id, cantidad){
+      const r = await fetch(`${API}/carrito/items/${id}`,{
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ cantidad })
+      });
+      if(!r.ok) throw new Error('No se pudo actualizar');
+    }
+    async function delItem(id){
+      const r = await fetch(`${API}/carrito/items/${id}`,{ method:'DELETE' });
+      if(!r.ok) throw new Error('No se pudo eliminar');
+    }
+    async function emptyCart(){
+      const r = await fetch(`${API}/carrito`,{
+        method:'DELETE', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ usuario_id: USER_ID })
+      });
+      if(!r.ok) throw new Error('No se pudo vaciar');
+    }
+
+    function render(cart){
+      const list = $('#cart-list');
+      if(!cart.items || cart.items.length === 0){
+        list.innerHTML = `<p class="cart-muted">Tu carrito está vacío.</p>`;
+        $('#sum-sub').textContent = money(0);
+        $('#sum-total').textContent = money(0);
+        return;
+      }
+      list.innerHTML = cart.items.map(it=>{
+        const p = it.producto || {};
+        const url = (p.url && p.url.trim()!=='') ? p.url : 'img/placeholder.jpg';
+        return `
+          <div class="cart-row" data-id="${it.id_detalle}">
+            <div class="cart-thumb" style="background-image:url('${url}')"></div>
+            <div>
+              <div class="cart-name">${p.marca ? `<span class="cart-muted">${p.marca}</span> — `:''}${p.nombre||''}</div>
+              <div class="cart-muted">SKU: ${p.id_producto || '-'}</div>
+            </div>
+            <div class="cart-money">${money(p.precio)}</div>
+            <div class="cart-qty">
+              <button class="cart-qtybtn" data-dec>-</button>
+              <input value="${it.cantidad}" data-qty />
+              <button class="cart-qtybtn" data-inc>+</button>
+            </div>
+            <div class="cart-trash" title="Eliminar" data-del><i class="bi bi-x-lg"></i></div>
+          </div>`;
+      }).join('');
+
+      const subtotal = cart.items.reduce((s,it)=> s + (Number(it.producto?.precio||0) * Number(it.cantidad||0)), 0);
+      $('#sum-sub').textContent = money(subtotal);
+      $('#sum-total').textContent = money(subtotal);
+
+      // eventos
+      list.querySelectorAll('.cart-row').forEach(row=>{
+        const id = row.dataset.id;
+        const qtyInput = row.querySelector('[data-qty]');
+
+        row.querySelector('[data-dec]').onclick = async ()=>{
+          const v = Math.max(1, (parseInt(qtyInput.value)||1)-1);
+          qtyInput.value = v; await updItem(id, v); load();
+        };
+        row.querySelector('[data-inc]').onclick = async ()=>{
+          const v = (parseInt(qtyInput.value)||1)+1;
+          qtyInput.value = v; await updItem(id, v); load();
+        };
+        row.querySelector('[data-del]').onclick = async ()=>{
+          await delItem(id); load();
+        };
+        qtyInput.onchange = async ()=>{
+          const v = Math.max(1, parseInt(qtyInput.value)||1);
+          qtyInput.value = v; await updItem(id, v); load();
+        };
+      });
+    }
+
+    async function load(){
+      try { render(await getCart()); }
+      catch(e){ $('#cart-list').innerHTML = `<p>Error cargando carrito.</p>`; console.error(e); }
+    }
+
+    $('#btn-empty').addEventListener('click', async ()=>{
+      if(!confirm('¿Vaciar el carrito?')) return;
+      await emptyCart(); load();
+    });
+
+    load();
+  </script>
+</body>
+</html>
