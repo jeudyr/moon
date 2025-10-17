@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const catalogRoutes = require('./routes/catalog.routes');
 
@@ -10,7 +11,8 @@ app.use(express.json());
 // Healthcheck
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-// API
+// Rutas
+app.use('/api/auth', require('./routes/auth.routes')); // primero auth
 app.use('/api', catalogRoutes);
 
 // Errores
