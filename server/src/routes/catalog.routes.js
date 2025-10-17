@@ -64,6 +64,28 @@ router.get('/subcategorias/:id/productos', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// Detalle de un producto por ID
+router.get('/productos/:id', async (req, res, next) => {
+  try {
+    const { Producto, Subcategoria, Categoria } = require('../models');
+    const { id } = req.params;
+
+    const prod = await Producto.findByPk(id, {
+      attributes: ['id_producto','nombre','descripcion','precio','url','color','marca','fk_subcategoria'],
+      include: [{
+        model: Subcategoria,
+        as: 'subcategoria',
+        attributes: ['id_subcategoria','nombre','fk_categoria'],
+        include: [{ model: Categoria, as: 'categoria', attributes: ['id_categoria','nombre'] }]
+      }]
+    });
+
+    if (!prod) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json(prod);
+  } catch (e) { next(e); }
+});
+
+
 module.exports = router;
 
 

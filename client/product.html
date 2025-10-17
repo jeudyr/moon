@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moon | Producto</title>
+  <link rel="stylesheet" href="src/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- Estilos específicos del PDP -->
+  <style>
+    /* Contenedor principal del PDP: imagen + info */
+    .pdp-pro {
+      display: grid;
+      grid-template-columns: 420px 1fr; /* imagen más grande */
+      gap: 40px;
+      align-items: flex-start;
+    }
+    .pdp-left { display:flex; flex-direction:column; gap:16px; }
+
+    .pdp-media {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      background: #f3f3f3 center/cover no-repeat;
+      border: 1px solid #eee;
+      box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    }
+
+    .pdp-right {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      text-align: left;
+    }
+    .pdp-path { font-size:.9rem; color:#777; }
+
+    .pdp-brand-badge{
+      display:inline-block;
+      background: var(--brand-100,#fdeff2);
+      color: var(--brand,#e9a7b3);
+      font-size:.85rem; font-weight:600;
+      padding:3px 8px; border-radius:6px; margin-bottom:6px;
+    }
+    .pdp-title{ margin:0; font-size:28px; font-weight:800; line-height:1.3; }
+    .pdp-price{ font-size:26px; font-weight:800; color:#111; }
+    .pdp-price-note{ font-size:.9rem; color:#666; }
+
+    .pdp-options{ display:flex; flex-direction:column; gap:16px; }
+    .pdp-field{ display:flex; flex-direction:column; gap:6px; }
+    .pdp-label{ font-size:.9rem; font-weight:600; color:#333; }
+
+    .pdp-swatches{ display:flex; gap:10px; flex-wrap:wrap; }
+    .swatch-chip{
+      display:flex; align-items:center; gap:6px;
+      background:#fff; border:1px solid #ddd; border-radius:8px;
+      padding:4px 8px; cursor:pointer; font-size:.9rem;
+    }
+    .swatch-chip .dot{
+      width:16px; height:16px; border-radius:50%;
+      background: var(--sw,#ccc);
+      border:1px solid #bbb;
+    }
+
+    .qty{ display:flex; align-items:center; gap:6px; }
+    .qty-input{
+      width:56px; text-align:center; border:1px solid #ddd; border-radius:6px; padding:6px;
+    }
+    .qty-btn{
+      width:32px; height:32px; border:1px solid #ddd; background:#f7f7f7; border-radius:6px; cursor:pointer;
+    }
+    .qty-btn:hover{ background:#eee; }
+
+    .pdp-cta{ display:flex; gap:12px; }
+    .btn{ padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer; border:0; }
+    .btn-primary{ background:var(--brand,#e9a7b3); color:#fff; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+    .btn-primary:hover{ background:var(--brand-600,#dfabb7); }
+
+    .pdp-benefits{
+      list-style:none; padding:0; margin:0; display:flex; gap:24px; font-size:.9rem; color:#444;
+    }
+    .pdp-benefits i{ margin-right:6px; color:var(--brand,#e9a7b3); }
+
+    .pdp-sec-title{ font-size:20px; font-weight:700; margin:0 0 10px; }
+    .pdp-desc{ color:#444; line-height:1.6; font-size:1rem; }
+
+    /* Responsive básico */
+    @media (max-width: 980px){
+      .pdp-pro{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit">
+        <img src="img/logo.png" alt="Moon Store" class="logo">
+        <span class="brand-name">MOON</span>
+      </a>
+    </div>
+    <form class="search" onsubmit="event.preventDefault();">
+      <input type="search" placeholder="Buscar producto" aria-label="Buscar producto">
+      <button type="submit" aria-label="Buscar"><i class="bi bi-search"></i></button>
+    </form>
+    <nav class="actions">
+      <a href="#" class="icon-link" aria-label="Carrito"><i class="bi bi-cart3"></i></a>
+      <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión</a>
+    </nav>
+  </header>
+
+  <!-- Migas -->
+  <div class="crumbbar">
+    <a href="index.html">Inicio</a>
+    <span></span>
+    <span class="current">Producto</span>
+  </div>
+
+  <main class="layout">
+    <!-- Sidebar categorías -->
+    <aside class="sidebar">
+      <h3>Categorías</h3>
+      <ul class="cats"><!-- se llena por JS --></ul>
+    </aside>
+
+    <!-- Columna principal -->
+    <section class="maincol">
+
+      <!-- PDP -->
+      <section class="block block--pdp">
+        <div class="pdp-pro">
+          <!-- Imagen -->
+          <aside class="pdp-left">
+            <div class="pdp-media" id="pdp-img"></div>
+          </aside>
+
+          <!-- Info -->
+          <article class="pdp-right">
+            <nav class="pdp-path" id="pdp-meta"></nav>
+
+            <div class="pdp-head">
+              <span class="pdp-brand-badge" id="pdp-brand-badge"></span>
+              <h1 class="pdp-title" id="pdp-title">—</h1>
+            </div>
+
+            <div class="pdp-price-wrap">
+              <div class="pdp-price" id="pdp-price">—</div>
+              <div class="pdp-price-note">Impuesto incluido</div>
+            </div>
+
+            <div class="pdp-options">
+              <!-- Color (oculto si no aplica) -->
+              <div class="pdp-field" id="pdp-color" hidden>
+                <label class="pdp-label">Color</label>
+                <div class="pdp-swatches" id="pdp-color-chips"></div>
+              </div>
+
+              <!-- Cantidad -->
+              <div class="pdp-field">
+                <label class="pdp-label">Cantidad</label>
+                <div class="qty">
+                  <button class="qty-btn" id="qty_minus" aria-label="Disminuir">−</button>
+                  <input class="qty-input" id="qty" value="1" inputmode="numeric" />
+                  <button class="qty-btn" id="qty_plus" aria-label="Aumentar">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pdp-cta">
+              <button class="btn btn-primary" id="btn-add">
+                <i class="bi bi-bag-plus"></i> Añadir al carrito
+              </button>
+            </div>
+
+            <ul class="pdp-benefits">
+              <li><i class="bi bi-truck"></i> Envío gratis desde ₡50,000</li>
+              <li><i class="bi bi-shield-check"></i> Garantía oficial</li>
+              <li><i class="bi bi-arrow-left-right"></i> Cambios en 30 días</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- Descripción (siempre visible) -->
+      <section class="block">
+        <h2 class="pdp-sec-title">Descripción</h2>
+        <div id="pdp-desc" class="pdp-desc">—</div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">© 2025 Moon Store</footer>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    const $ = (s) => document.querySelector(s);
+    const params = new URLSearchParams(location.search);
+    const productId = params.get('id');
+
+    async function fetchJSON(url){
+      const r = await fetch(url);
+      if (!r.ok) {
+        const msg = await r.text().catch(()=>'');
+        throw new Error(`HTTP ${r.status}: ${msg || r.statusText}`);
+      }
+      return r.json();
+    }
+
+    async function loadSidebar(){
+      try{
+        const cats = await fetchJSON(`${API}/categorias`);
+        $('.sidebar .cats').innerHTML =
+          cats.map(c => `<li class="cat-item"><a href="index.html#cat-${c.id}">${c.nombre}</a></li>`).join('');
+      }catch(e){ console.error('Error cargando categorías:', e); }
+    }
+
+    function cssColor(txt){
+      const map = {
+        negro:'#111', blanco:'#eee', rojo:'#e53935', azul:'#1e88e5',
+        verde:'#43a047', rosa:'#ec407a', beige:'#d7c5a9', dorado:'#d4af37', plata:'#c0c0c0'
+      };
+      const k = String(txt||'').toLowerCase().trim();
+      return map[k] || txt || '#ccc';
+    }
+
+    function hasMeaningfulColor(value){
+      const v = String(value || '').trim().toLowerCase();
+      // valores que equivalen a "sin color"
+      const bad = ['', '-', 'na', 'n/a', 's/n', 'sin color', 'null', 'undefined'];
+      return !bad.includes(v);
+    }
+
+    async function loadProduct(){
+      if (!productId){
+        $('.maincol').innerHTML = '<section class="block"><p>Falta el parámetro <code>?id=</code> del producto.</p></section>';
+        return;
+      }
+      try{
+        const p = await fetchJSON(`${API}/productos/${productId}`);
+
+        // Migas
+        const cat = p?.subcategoria?.categoria?.nombre;
+        const sub = p?.subcategoria?.nombre;
+        $('#pdp-meta').textContent = [cat, sub].filter(Boolean).join(' › ');
+
+        // Título / marca
+        $('#pdp-title').textContent = p?.nombre || '';
+        $('#pdp-brand-badge').textContent = p?.marca || '';
+
+        // Imagen
+        const url = (p?.url && p.url.trim() !== '') ? p.url : 'img/placeholder.jpg';
+        $('#pdp-img').style.backgroundImage = `url("${url}")`;
+
+        // Precio
+        $('#pdp-price').textContent = '₡' + Number(p?.precio ?? 0).toLocaleString('es-CR');
+
+        // Descripción
+        $('#pdp-desc').textContent = p?.descripcion || '—';
+
+        // Colores
+        const colorField = $('#pdp-color');
+        const colorChips = $('#pdp-color-chips');
+        colorField.hidden = true;
+        colorChips.innerHTML = '';
+
+        const colTxt = (p?.color ?? '').trim();
+        let colors = [];
+
+        if (hasMeaningfulColor(colTxt)) {
+          colors = colTxt.split(',')
+            .map(s => s.trim())
+            .filter(c => hasMeaningfulColor(c));
+        }
+
+        if (colors.length){
+          colorChips.innerHTML = colors.map(c => `
+            <button class="swatch-chip" data-color="${c}">
+              <span class="dot" style="--sw:${cssColor(c)}"></span>
+              <span class="label">${c}</span>
+            </button>
+          `).join('');
+          colorField.hidden = false;
+        }
+
+        // Cantidad
+        const qty = $('#qty');
+        $('#qty_minus').onclick = () => qty.value = Math.max(1, (parseInt(qty.value)||1) - 1);
+        $('#qty_plus').onclick  = () => qty.value = (parseInt(qty.value)||1) + 1;
+
+      }catch(e){
+        console.error('Error cargando producto:', e);
+        document.querySelector('.maincol').innerHTML =
+          `<section class="block" style="background:#fdecec;border-color:#f3c2c2">
+             <p><strong>No se pudo cargar el producto.</strong></p>
+             <p style="margin-top:8px">${e.message}</p>
+             <p style="margin-top:8px">Vuelve al <a href="index.html">catálogo</a> y abre el producto desde ahí.</p>
+           </section>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadSidebar();
+      await loadProduct();
+    });
+  </script>
+</body>
+</html>
