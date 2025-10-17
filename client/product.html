@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Moon | Producto</title>
 
-  <!-- CSS global tuyo -->
   <link rel="stylesheet" href="src/styles.css" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-
+  <style>
+    html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
+    main { flex: 1; }
+    .footer { margin-top: auto; }
+  </style>
 </head>
 <body>
 
-  <!-- Top bar -->
   <header class="topbar">
     <div class="brand">
       <a href="index.html" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit">
@@ -30,11 +30,10 @@
     </form>
     <nav class="actions">
       <a href="carrito.html" class="icon-link" aria-label="Carrito"><i class="bi bi-cart3"></i></a>
-      <a href="#" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión</a>
+      <a href="login.html" class="login"><i class="bi bi-person-circle"></i>Iniciar sesión</a>
     </nav>
   </header>
 
-  <!-- Migas -->
   <div class="crumbbar">
     <a href="index.html">Inicio</a>
     <span></span>
@@ -42,27 +41,20 @@
   </div>
 
   <main class="layout">
-    <!-- Sidebar categorías -->
     <aside class="sidebar">
       <h3>Categorías</h3>
-      <ul class="cats"><!-- se llena por JS --></ul>
+      <ul class="cats"></ul>
     </aside>
 
-    <!-- Columna principal -->
     <section class="maincol">
-
-      <!-- PDP -->
       <section class="block block--pdp">
         <div class="pdp-pro">
-          <!-- Imagen -->
           <aside class="pdp-left">
             <div class="pdp-media" id="pdp-img"></div>
           </aside>
 
-          <!-- Info -->
           <article class="pdp-right">
             <nav class="pdp-path" id="pdp-meta"></nav>
-
             <div class="pdp-head">
               <span class="pdp-brand-badge" id="pdp-brand-badge"></span>
               <h1 class="pdp-title" id="pdp-title">—</h1>
@@ -74,13 +66,11 @@
             </div>
 
             <div class="pdp-options">
-              <!-- Color (oculto si no aplica) -->
               <div class="pdp-field" id="pdp-color" hidden>
                 <label class="pdp-label">Color</label>
                 <div class="pdp-swatches" id="pdp-color-chips"></div>
               </div>
 
-              <!-- Cantidad -->
               <div class="pdp-field">
                 <label class="pdp-label">Cantidad</label>
                 <div class="qty">
@@ -106,7 +96,6 @@
         </div>
       </section>
 
-      <!-- Descripción (siempre visible) -->
       <section class="block">
         <h2 class="pdp-sec-title">Descripción</h2>
         <div id="pdp-desc" class="pdp-desc">—</div>
@@ -116,19 +105,16 @@
 
   <footer class="footer">© 2025 Moon Store</footer>
 
+  <script src="src/auth.js"></script>
   <script>
-    const API = 'http://localhost:5000/api';
-    const USER_ID = 1; // TODO: reemplazar por el usuario en sesión
+    const API = auth.API;
     const $ = s => document.querySelector(s);
     const params = new URLSearchParams(location.search);
     const productId = Number(params.get('id'));
 
     async function fetchJSON(url){
       const r = await fetch(url);
-      if (!r.ok) {
-        const msg = await r.text().catch(()=> '');
-        throw new Error(`HTTP ${r.status}: ${msg || r.statusText}`);
-      }
+      if (!r.ok) throw new Error(`HTTP ${r.status}: ${(await r.text().catch(()=>'')) || r.statusText}`);
       return r.json();
     }
 
@@ -136,38 +122,33 @@
       try{
         const cats = await fetchJSON(`${API}/categorias`);
         $('.sidebar .cats').innerHTML =
-          cats.map(c => `<li class="cat-item"><a href="index.html#cat-${c.id}">${c.nombre}</a></li>`).join('');
+          cats.map(c => `<li class="cat-item"><a href="index.html#cat-${c.id_categoria}">${c.nombre}</a></li>`).join('');
       }catch(e){ console.error('Error cargando categorías:', e); }
     }
 
     function cssColor(txt){
-      const map = {
-        negro:'#111', blanco:'#eee', rojo:'#e53935', azul:'#1e88e5',
-        verde:'#43a047', rosa:'#ec407a', beige:'#d7c5a9', dorado:'#d4af37', plata:'#c0c0c0'
-      };
+      const map = { negro:'#111', blanco:'#eee', rojo:'#e53935', azul:'#1e88e5', verde:'#43a047', rosa:'#ec407a', beige:'#d7c5a9', dorado:'#d4af37', plata:'#c0c0c0' };
       const k = String(txt||'').toLowerCase().trim();
       return map[k] || txt || '#ccc';
     }
-
     function hasMeaningfulColor(value){
-      // limpia comillas y espacios: "", "  "
       const v = String(value || '').replace(/"/g,'').trim().toLowerCase();
-      const bad = ['', '-', 'na', 'n/a', 's/n', 'sin color', 'null', 'undefined'];
-      return !bad.includes(v);
+      return !['','-','na','n/a','s/n','sin color','null','undefined'].includes(v);
     }
 
     async function addToCart(productoId, cantidad=1){
-      const r = await fetch(`${API}/carrito/items`, {
+      const r = await auth.apiFetch(`${API}/carrito/items`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ usuario_id: USER_ID, producto_id: productoId, cantidad })
+        body: JSON.stringify({ fk_producto: productoId, cantidad })
       });
       if(!r.ok){
-        const msg = await r.text().catch(()=> '');
-        throw new Error(msg || 'No se pudo añadir al carrito');
+        if (r.status === 401) throw new Error('Necesitas iniciar sesión');
+        throw new Error((await r.text().catch(()=>'')) || 'No se pudo añadir al carrito');
       }
       return r.json();
     }
+
 
     async function loadProduct(){
       if (!productId){
@@ -177,63 +158,52 @@
       try{
         const p = await fetchJSON(`${API}/productos/${productId}`);
 
-        // Migas
         const cat = p?.subcategoria?.categoria?.nombre;
         const sub = p?.subcategoria?.nombre;
         $('#pdp-meta').textContent = [cat, sub].filter(Boolean).join(' › ');
 
-        // Título / marca
         $('#pdp-title').textContent = p?.nombre || '';
         $('#pdp-brand-badge').textContent = p?.marca || '';
 
-        // Imagen
         const url = (p?.url && p.url.trim() !== '') ? p.url : 'img/placeholder.jpg';
         $('#pdp-img').style.backgroundImage = `url("${url}")`;
 
-        // Precio
         $('#pdp-price').textContent = '₡' + Number(p?.precio ?? 0).toLocaleString('es-CR');
-
-        // Descripción
         $('#pdp-desc').textContent = p?.descripcion || '—';
 
-        // Colores
         const colorField = $('#pdp-color');
         const colorChips = $('#pdp-color-chips');
-        colorField.hidden = true;
-        colorChips.innerHTML = '';
+        colorField.hidden = true; colorChips.innerHTML = '';
 
         const colTxt = (p?.color ?? '');
         let colors = [];
-
         if (hasMeaningfulColor(colTxt)) {
-          colors = String(colTxt)
-            .split(',')
-            .map(s => s.replace(/"/g,'').trim())
-            .filter(c => hasMeaningfulColor(c));
+          colors = String(colTxt).split(',').map(s => s.replace(/"/g,'').trim()).filter(hasMeaningfulColor);
         }
-
         if (colors.length){
           colorChips.innerHTML = colors.map(c => `
             <button class="swatch-chip" data-color="${c}">
               <span class="dot" style="--sw:${cssColor(c)}"></span>
               <span class="label">${c}</span>
-            </button>
-          `).join('');
+            </button>`).join('');
           colorField.hidden = false;
         }
 
-        // Cantidad + añadir
         const qtyInput = $('#qty');
         $('#qty_minus').onclick = () => qtyInput.value = Math.max(1, (parseInt(qtyInput.value)||1) - 1);
         $('#qty_plus').onclick  = () => qtyInput.value = (parseInt(qtyInput.value)||1) + 1;
 
         $('#btn-add').onclick = async () => {
           try{
+            if (!auth.getToken()) { auth.requireAuth(true); return; }
             const qty = Math.max(1, parseInt(qtyInput.value)||1);
             await addToCart(productId, qty);
-            // Ir al carrito
             location.href = 'carrito.html';
           }catch(err){
+            if (String(err.message).includes('iniciar sesión')) {
+              if (confirm('Debes iniciar sesión para continuar. ¿Ir a login?')) location.href = 'login.html';
+              return;
+            }
             alert(err.message || 'No se pudo añadir al carrito');
           }
         };
@@ -250,6 +220,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
+      if (window.auth) auth.renderAuthUI();
       await loadSidebar();
       await loadProduct();
     });

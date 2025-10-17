@@ -1,70 +1,122 @@
-const db = require('../models');
-const { User } = db;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Usuario } = require('../models');
 
+// Firma del JWT con los campos reales de tu tabla usuarios
 function sign(user) {
   return jwt.sign(
-    { sub: user.id_usuarios, correo: user.correo },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES || '7d' }
+    {
+      id_usuario: user.id_usuarios,   // PK en tu tabla
+      nombre: user.nombre,
+      correo: user.correo,
+    },
+    process.env.JWT_SECRET || 'dev_secret',
+    { expiresIn: '7d' }
   );
 }
 
-// Registro (normaliza correo)
-exports.register = async (req, res) => {
+// POST /api/auth/register
+exports.register = async (req, res, next) => {
   try {
-    let { nombre, apellidos, correo, telefono, contrasena } = req.body;
-    correo = (correo || '').trim().toLowerCase();
+    const nombre    = req.body.nombre;
+    const apellidos = req.body.apellidos || '';
+    const correo    = req.body.correo || req.body.email;
+    const telefono  = req.body.telefono || null;
+    const rawPass   = req.body.password || req.body.contrasena;
 
-    const existe = await User.findOne({ where: { correo } });
-    if (existe) return res.status(409).json({ message: 'El correo ya existe.' });
+    if (!nombre || !correo || !rawPass) {
+      return res.status(400).json({ error: 'faltan campos' });
+    }
 
-    const hash = await bcrypt.hash(contrasena, 10);
-    const nuevo = await User.create({ nombre, apellidos, correo, telefono, contrasena: hash });
+    const exists = await Usuario.findOne({ where: { correo } });
+    if (exists) return res.status(409).json({ error: 'email ya registrado' });
 
-    const token = sign(nuevo);
-    res.json({
-      token,
-      user: {
-        id: nuevo.id_usuarios,
-        nombre: nuevo.nombre,
-        apellidos: nuevo.apellidos,
-        correo: nuevo.correo,
-        telefono: nuevo.telefono
-      }
+    // Guardamos como hash en la columna 'contrasena'
+    const contrasena = await bcrypt.hash(rawPass, 10);
+
+    const user = await Usuario.create({
+      nombre,
+      apellidos,
+      correo,
+      telefono,
+      contrasena, // <= hash bcrypt
     });
-  } catch (e) {
-    console.error('[REGISTER ERROR]', e);
-    res.status(500).json({ message: 'Error al registrar.' });
-  }
-};
-
-// Login (normaliza correo)
-exports.login = async (req, res) => {
-  try {
-    let { correo, contrasena } = req.body;
-    correo = (correo || '').trim().toLowerCase();
-
-    const user = await User.findOne({ where: { correo } });
-    if (!user || !user.contrasena) return res.status(401).json({ message: 'Credenciales inválidas' });
-
-    const ok = await bcrypt.compare(contrasena, user.contrasena);
-    if (!ok) return res.status(401).json({ message: 'Credenciales inválidas' });
 
     const token = sign(user);
     res.json({
       token,
       user: {
-        id: user.id_usuarios,
+        id_usuario: user.id_usuarios,
         nombre: user.nombre,
-        apellidos: user.apellidos,
         correo: user.correo,
-        telefono: user.telefono
-      }
+      },
     });
   } catch (e) {
-    console.error('[LOGIN ERROR]', e);
-    res.status(500).json({ message: 'Error al iniciar sesión.' });
+    console.error('[auth.register]', e);
+    next(e);
   }
+};
+
+// POST /api/auth/login
+exports.login = async (req, res, next) => {
+  try {
+    const correo  = req.body.correo || req.body.email;
+    const passInp = req.body.password || req.body.contrasena;
+
+    if (!correo || !passInp) {
+      return res.status(400).json({ error: 'Faltan credenciales.' });
+    }
+
+    const user = await Usuario.findOne({ where: { correo } });
+    if (!user) return res.status(401).json({ error: 'credenciales inválidas' });
+
+    const stored = user.contrasena; // puede estar hasheada o en texto
+
+    if (!stored) {
+      return res.status(500).json({ error: 'Usuario sin contraseña configurada.' });
+    }
+
+    let ok = false;
+    if (/^\$2[aby]\$/.test(stored)) {
+      // bcrypt
+      ok = await bcrypt.compare(passInp, stored);
+    } else {
+      // texto plano (temporal) + migración a bcrypt
+      ok = passInp === String(stored);
+      if (ok) {
+        try {
+          user.contrasena = await bcrypt.hash(passInp, 10);
+          await user.save();
+        } catch (mErr) {
+          console.warn('[auth.login] No se pudo migrar a bcrypt:', mErr.message);
+        }
+      }
+    }
+
+    if (!ok) return res.status(401).json({ error: 'credenciales inválidas' });
+
+    const token = sign(user);
+    res.json({
+      token,
+      user: {
+        id_usuario: user.id_usuarios,
+        nombre: user.nombre,
+        correo: user.correo,
+      },
+    });
+  } catch (e) {
+    console.error('[auth.login]', e);
+    next(e);
+  }
+};
+
+// GET /api/auth/me
+exports.me = async (req, res) => {
+  // lo setea el middleware
+  res.json(req.user);
+};
+
+// POST /api/auth/logout
+exports.logout = async (_req, res) => {
+  res.status(204).send();
 };

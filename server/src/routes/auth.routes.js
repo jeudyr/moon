@@ -1,8 +1,11 @@
-const { Router } = require('express');
-const { register, login } = require('../controllers/auth.controller');
+const router = require('express').Router();
+const ctrl = require('../controllers/auth.controller');
+const auth = require('../middlewares/auth.middleware');
 
-const router = Router();
-router.post('/register', register);
-router.post('/login', login);
+router.get('/health', (_req, res) => res.json({ ok: true }));
+router.post('/register', ctrl.register);
+router.post('/login', ctrl.login);
+router.get('/me', auth, ctrl.me);
+router.post('/logout', auth, ctrl.logout);
 
 module.exports = router;
